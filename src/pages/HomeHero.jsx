@@ -10,7 +10,7 @@ const copy = {
     body: "Trendy looks, funny moments, and unfiltered style — because fashion isn’t just what you wear, it’s how you feel.",
     cta: "Explore the edit",
     slogan: "Be bold / Be you / Be Insolite",
-    mainAlt: "Khim Asriel, Insolite Magazine editorial portrait",
+    mainAlt: "Insolite Magazine editorial, a playful street look",
     sideAlt: "Funny outfits, a playful street look",
   },
   FR: {
@@ -20,7 +20,7 @@ const copy = {
     body: "Looks tendance, moments drôles et style sans filtre — parce que la mode ne se résume pas à ce que l’on porte, c’est la façon dont on se sent.",
     cta: "Découvrir la sélection",
     slogan: "Soyez audacieux / Soyez vous / Soyez Insolite",
-    mainAlt: "Khim Asriel, portrait éditorial Insolite Magazine",
+    mainAlt: "Éditorial Insolite Magazine, un look de rue espiègle",
     sideAlt: "Tenues amusantes, look de rue espiègle",
   },
 };
@@ -77,7 +77,7 @@ const HomeHero = () => {
           <figure className="relative w-[55%] max-w-[250px] sm:w-[62%] sm:max-w-[300px] lg:ml-auto lg:mr-0 lg:w-[80%] lg:max-w-none">
             <div className="overflow-hidden bg-linen lg:aspect-[4/5]">
               <StoryImage
-                src="/static-men-image/men.jpeg"
+                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85"
                 alt={t.mainAlt}
                 eager
                 className="mx-auto block h-auto w-full object-cover object-center img-tone lg:h-full"

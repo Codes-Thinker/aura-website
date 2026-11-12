@@ -15,7 +15,6 @@ export const forthcomingPages = {
   lifestyle: { title: { EN: "Lifestyle", FR: "Lifestyle" } },
   gourmet: { title: { EN: "Gourmet", FR: "Gourmet" } },
   design: { title: { EN: "Design", FR: "Design" } },
-  about: { title: { EN: "About Insolite", FR: "À propos d'Insolite" } },
   privacy: { title: { EN: "Privacy Policy", FR: "Confidentialité" } },
   terms: { title: { EN: "Terms & Conditions", FR: "Conditions générales" } },
 };

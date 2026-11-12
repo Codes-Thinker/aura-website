@@ -13,6 +13,7 @@ import InOut from "./pages/InOut";
 import Forthcoming from "./pages/Forthcoming";
 import NotFound from "./pages/NotFound";
 import ArticlePage from "./pages/ArticlePage";
+import About from "./pages/About";
 
 /**
  * Routing — full magazine on `/` (home).
@@ -34,6 +35,7 @@ function App() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/in-out" element={<InOut />} />
+              <Route path="/about" element={<About />} />
 
               {Object.entries(forthcomingPages).map(([slug, page]) => (
                 <Route
