@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../common/language";
 import { StoryImage } from "../common/ui";
 
@@ -100,16 +100,12 @@ const copy = {
     previous: "Previous slide",
     next: "Next slide",
     goTo: "Go to slide",
-    pause: "Pause slideshow",
-    play: "Play slideshow",
   },
   FR: {
     label: "Sélection à la une",
     previous: "Diapositive précédente",
     next: "Diapositive suivante",
     goTo: "Aller à la diapositive",
-    pause: "Mettre le diaporama en pause",
-    play: "Lancer le diaporama",
   },
 };
 
@@ -127,19 +123,16 @@ const HomeHero = () => {
   const count = slides.length;
 
   const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(true);
   const touchStartX = useRef(null);
 
   const goTo = (next) => setIndex(((next % count) + count) % count);
 
-  // Autoplay runs for every visitor. A visible Pause button stops it.
-  // Restarting the timer on each change means a manual click gets a full interval.
+  // Autoplay runs for every visitor. Restarting the timer on each change means
+  // a manual click gets a full interval before the next slide.
   useEffect(() => {
-    if (!playing) return undefined;
-
     const timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
     return () => clearInterval(timer);
-  }, [playing, count, index]);
+  }, [count, index]);
 
   const onTouchStart = (event) => {
     touchStartX.current = event.touches[0].clientX;
@@ -240,19 +233,6 @@ const HomeHero = () => {
               className="flex h-10 w-10 items-center justify-center border border-ink/20 text-ink transition-colors duration-300 hover:border-oxblood hover:text-oxblood"
             >
               <ChevronRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setPlaying((p) => !p)}
-              aria-label={playing ? t.pause : t.play}
-              aria-pressed={!playing}
-              className="flex h-10 w-10 items-center justify-center border border-ink/20 text-ink transition-colors duration-300 hover:border-oxblood hover:text-oxblood"
-            >
-              {playing ? (
-                <Pause className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              ) : (
-                <Play className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-              )}
             </button>
           </div>
 
