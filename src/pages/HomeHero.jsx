@@ -171,7 +171,7 @@ const HomeHero = () => {
                   className="w-full shrink-0"
                 >
                   <div className="grid grid-cols-1 items-center gap-8 px-5 pb-10 pt-8 sm:gap-10 sm:px-8 sm:pt-12 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:pb-16 lg:pt-16">
-                    <div className="order-2 text-center lg:order-1 lg:col-span-5 lg:text-left">
+                    <div className="order-1 text-center lg:order-1 lg:col-span-5 lg:text-left">
                       <p className="eyebrow motion-safe:animate-fade-up">{s.eyebrow}</p>
 
                       <h1 className="mt-4 font-serif text-[clamp(2.4rem,9vw,5.5rem)] leading-[0.92] tracking-[-0.03em] motion-safe:animate-fade-up">
@@ -195,7 +195,7 @@ const HomeHero = () => {
                       )}
                     </div>
 
-                    <div className="order-1 lg:order-2 lg:col-span-7">
+                    <div className="order-2 lg:order-2 lg:col-span-7">
                       <div className="aspect-[4/3] overflow-hidden bg-linen lg:aspect-[5/4]">
                         <StoryImage
                           src={slide.image}
