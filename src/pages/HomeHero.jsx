@@ -113,9 +113,8 @@ const pad = (n) => String(n).padStart(2, "0");
 
 /**
  * Home header — editorial carousel (no portrait).
- * Auto-advances every few seconds; pauses on hover/focus and when the visitor
- * prefers reduced motion. Swipeable on touch screens; arrow buttons and dots
- * work for keyboard and screen-reader users.
+ * Auto-advances every few seconds for all visitors. Swipeable on touch screens;
+ * arrow buttons and dots work for keyboard and screen-reader users.
  */
 const HomeHero = () => {
   const { lang } = useLanguage();
