@@ -38,8 +38,11 @@ const HomeHero = () => {
   return (
     <section className="bg-ivory">
       <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-end gap-8 pb-12 sm:gap-14 sm:pb-16 md:pb-24 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:pt-20">
-        {/* Copy — sits under the portrait on mobile, left column on desktop */}
-        <div className="order-2 px-5 sm:px-8 lg:order-1 lg:col-span-5 lg:px-0 lg:pb-10">
+        {/*
+          Copy — centered under the portrait on mobile (same axis as logo + image),
+          left column on desktop.
+        */}
+        <div className="order-2 px-5 text-center sm:px-8 lg:order-1 lg:col-span-5 lg:px-0 lg:pb-10 lg:text-left">
           <p className="eyebrow motion-safe:animate-fade-up">{t.eyebrow}</p>
 
           <p className="mt-4 font-serif text-[1.65rem] italic motion-safe:animate-fade-up sm:text-4xl">
@@ -51,34 +54,38 @@ const HomeHero = () => {
             <span className="italic">{t.title}</span>
           </h1>
 
-          <p className="mt-6 max-w-sm font-sans text-[15px] leading-7 text-stone motion-safe:animate-fade-up sm:mt-8 sm:text-base sm:leading-8">
+          <p className="mx-auto mt-6 max-w-sm font-sans text-[15px] leading-7 text-stone motion-safe:animate-fade-up sm:mt-8 sm:text-base sm:leading-8 lg:mx-0">
             {t.body}
           </p>
 
-          <a href="#latest" className="btn-solid mt-7 motion-safe:animate-fade-up sm:mt-8">
+          <a
+            href="#latest"
+            className="btn-solid mt-7 motion-safe:animate-fade-up sm:mt-8 lg:inline-flex"
+          >
             {t.cta}
             <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
           </a>
         </div>
 
         {/*
-          Mobile: narrow centered portrait (width kam, natural height) like Edito.
-          sm+: wider inset frame; lg+: floating side image returns.
+          Mobile / tablet: portrait is truly centered (equal side margins) on the
+          same vertical axis as the navbar logo — client flagged left gap > right.
+          Desktop (lg+): editorial right-aligned frame + floating inset returns.
         */}
-        <div className="relative order-1 px-5 pt-6 sm:px-8 lg:order-2 lg:col-span-7 lg:px-0 lg:pt-0">
+        <div className="relative order-1 flex justify-center px-5 pt-6 sm:px-8 lg:order-2 lg:col-span-7 lg:block lg:px-0 lg:pt-0">
           {/* “Main Character” label removed — portrait only */}
-          <figure className="relative mx-auto w-[55%] max-w-[250px] sm:ml-auto sm:mr-0 sm:w-[88%] sm:max-w-none md:w-[80%]">
-            <div className="overflow-hidden bg-linen sm:aspect-[4/5]">
+          <figure className="relative w-[55%] max-w-[250px] sm:w-[62%] sm:max-w-[300px] lg:ml-auto lg:mr-0 lg:w-[80%] lg:max-w-none">
+            <div className="overflow-hidden bg-linen lg:aspect-[4/5]">
               <StoryImage
                 src="/static-men-image/men.jpeg"
                 alt={t.mainAlt}
                 eager
-                className="h-auto w-full object-cover object-center img-tone sm:h-full"
+                className="mx-auto block h-auto w-full object-cover object-center img-tone lg:h-full"
               />
             </div>
           </figure>
 
-          <div className="absolute -bottom-10 left-0 hidden w-[42%] border-[8px] border-ivory bg-linen sm:block md:-left-10 md:w-[36%] lg:-left-14">
+          <div className="absolute -bottom-10 left-0 hidden w-[42%] border-[8px] border-ivory bg-linen lg:block lg:-left-14 lg:w-[36%]">
             <div className="aspect-[3/4] overflow-hidden">
               <StoryImage
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85"

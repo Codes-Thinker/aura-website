@@ -73,16 +73,17 @@ const MobileMenu = ({ onClose, lang, t }) => (
     aria-label={t.menuLabel}
     className="fixed inset-0 z-[60] flex flex-col overflow-y-auto bg-ivory md:hidden"
   >
+    {/* Equal side columns keep the logo on the true page center */}
     <div className="grid h-20 shrink-0 grid-cols-[1fr_auto_1fr] items-center px-5">
-      <div className="flex items-center">
+      <div className="flex items-center justify-start">
         <LanguageSwitch className="flex" />
       </div>
 
-      <Link to="/" onClick={onClose} aria-label="Insolite Magazine home">
+      <Link to="/" onClick={onClose} aria-label="Insolite Magazine home" className="justify-self-center">
         <Logo />
       </Link>
 
-      <div className="flex justify-end">
+      <div className="flex items-center justify-end">
         <button
           type="button"
           onClick={onClose}
@@ -180,10 +181,11 @@ const Navbar = () => {
         </div>
 
         {/*
-          Main row — on mobile the side columns stay compact so the logo
-          has room; language / menu never collide with the wordmark.
+          Main row — equal 1fr side columns so the logo sits on the true
+          horizontal center of the page (same axis as the hero portrait).
+          Asymmetric columns were shifting the wordmark off the image center.
         */}
-        <div className="mx-auto grid h-[4.5rem] max-w-[1440px] grid-cols-[2.75rem_minmax(0,1fr)_auto] items-center gap-x-1 px-3 sm:h-24 sm:grid-cols-[minmax(4.5rem,1fr)_auto_minmax(4.5rem,1fr)] sm:gap-x-0 sm:px-8 md:h-28 lg:px-12">
+        <div className="mx-auto grid h-[4.5rem] max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center px-3 sm:h-24 sm:px-8 md:h-28 lg:px-12">
           <div className="flex items-center justify-start">
             <LanguageSwitch className="hidden md:flex" />
 
@@ -207,7 +209,7 @@ const Navbar = () => {
             <Logo />
           </Link>
 
-          <div className="flex items-center justify-end pl-1">
+          <div className="flex items-center justify-end">
             {/* Compact FR/EN — smaller tracking so it fits without crowding the logo */}
             <LanguageSwitch className="flex !gap-1 !px-0 text-[10px] tracking-[0.12em] md:hidden" />
 

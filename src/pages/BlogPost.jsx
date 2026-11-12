@@ -59,6 +59,13 @@ const BlogPost = () => {
             {post.title}
           </h1>
 
+          {/* Lead description under the title — same role as story.description on ArticlePage */}
+          {post.excerpt && (
+            <p className="mt-6 max-w-2xl font-serif text-xl italic leading-snug text-stone sm:text-2xl">
+              {post.excerpt}
+            </p>
+          )}
+
           <div className="mt-5 h-px w-16 bg-ink md:mt-6" />
 
           <div className="mt-6 space-y-5 font-sans text-[15px] leading-7 text-stone sm:text-base sm:leading-8 md:mt-8">
