@@ -1,106 +1,264 @@
-import { ArrowRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../common/language";
 import { StoryImage } from "../common/ui";
 
+const AUTOPLAY_MS = 6000;
+
+/*
+  Home header carousel. Each slide is an editorial teaser pointing into the
+  magazine; no portrait of the editor is shown on the home page.
+  Images are the existing editorial photos already used across the site.
+*/
+const slides = [
+  {
+    id: "edito",
+    to: "/edito",
+    image:
+      "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=85",
+    EN: {
+      eyebrow: "Edito",
+      title: "A letter for the November edit.",
+      body: "Cozy, comforting and undeniably chic. This month we dive into the season’s most captivating trends.",
+      cta: "Read the letter",
+      alt: "Autumn editorial look",
+    },
+    FR: {
+      eyebrow: "Edito",
+      title: "Une lettre pour l’édition de novembre.",
+      body: "Cocooning, réconfortant et indéniablement chic. Ce mois-ci, nous plongeons dans les tendances les plus captivantes de la saison.",
+      cta: "Lire la lettre",
+      alt: "Look éditorial d’automne",
+    },
+  },
+  {
+    id: "mood",
+    href: "#latest",
+    image:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1200&q=85",
+    EN: {
+      eyebrow: "Style beyond trends",
+      title: "Fashion is how you feel.",
+      body: "Trendy looks, funny moments and unfiltered style. Fashion isn’t just what you wear, it’s how you feel.",
+      cta: "Explore the edit",
+      alt: "Playful street look",
+    },
+    FR: {
+      eyebrow: "Le style au-delà des tendances",
+      title: "La mode, c’est ce que l’on ressent.",
+      body: "Looks tendance, moments drôles et style sans filtre. La mode ne se résume pas à ce que l’on porte, c’est la façon dont on se sent.",
+      cta: "Découvrir la sélection",
+      alt: "Look de rue espiègle",
+    },
+  },
+  {
+    id: "beauty",
+    href: "#beauty",
+    image:
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=1200&q=85",
+    EN: {
+      eyebrow: "Beauty",
+      title: "Rituals that survive the cold.",
+      body: "Hydration, richer pigments and a three-step evening reset that feels like luxury without the noise.",
+      cta: "Discover beauty",
+      alt: "Beauty editorial",
+    },
+    FR: {
+      eyebrow: "Beauté",
+      title: "Des rituels qui résistent au froid.",
+      body: "Hydratation, pigments plus riches et un reset du soir en trois gestes qui ont l’air luxueux sans le bruit.",
+      cta: "Découvrir la beauté",
+      alt: "Éditorial beauté",
+    },
+  },
+  {
+    id: "in-out",
+    to: "/in-out",
+    image:
+      "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=1200&q=85",
+    EN: {
+      eyebrow: "In & Out",
+      title: "What is up, what is down.",
+      body: "Creative layering stays up. Forced trends and empty maximalism go down.",
+      cta: "See the scorecard",
+      alt: "Layered outfit editorial",
+    },
+    FR: {
+      eyebrow: "In & Out",
+      title: "Ce qui monte, ce qui descend.",
+      body: "Le layering créatif reste en haut. Les tendances forcées et le maximalisme vide descendent.",
+      cta: "Voir le tableau",
+      alt: "Éditorial de superpositions",
+    },
+  },
+];
+
 const copy = {
-  EN: {
-    eyebrow: "Style beyond trends",
-    lead: "Fashion is a",
-    title: "MOOD.",
-    body: "Trendy looks, funny moments, and unfiltered style — because fashion isn’t just what you wear, it’s how you feel.",
-    cta: "Explore the edit",
-    slogan: "Be bold / Be you / Be Insolite",
-    mainAlt: "Insolite Magazine editorial, a playful street look",
-    sideAlt: "Funny outfits, a playful street look",
-  },
-  FR: {
-    eyebrow: "Le style au-delà des tendances",
-    lead: "La mode est une",
-    title: "HUMEUR.",
-    body: "Looks tendance, moments drôles et style sans filtre — parce que la mode ne se résume pas à ce que l’on porte, c’est la façon dont on se sent.",
-    cta: "Découvrir la sélection",
-    slogan: "Soyez audacieux / Soyez vous / Soyez Insolite",
-    mainAlt: "Éditorial Insolite Magazine, un look de rue espiègle",
-    sideAlt: "Tenues amusantes, look de rue espiègle",
-  },
+  EN: { label: "Featured stories", previous: "Previous slide", next: "Next slide", goTo: "Go to slide" },
+  FR: { label: "Sélection à la une", previous: "Diapositive précédente", next: "Diapositive suivante", goTo: "Aller à la diapositive" },
 };
 
+const pad = (n) => String(n).padStart(2, "0");
+
 /**
- * Home hero.
- * Mobile matches the approved phone reference: padded (not full-bleed) portrait,
- * then eyebrow → lead → HUMEUR → body in the same content column.
- * lg+: original two-column editorial layout with floating inset.
+ * Home header — editorial carousel (no portrait).
+ * Auto-advances every few seconds; pauses on hover/focus and when the visitor
+ * prefers reduced motion. Swipeable on touch screens; arrow buttons and dots
+ * work for keyboard and screen-reader users.
  */
 const HomeHero = () => {
   const { lang } = useLanguage();
   const t = copy[lang];
+  const count = slides.length;
+
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const touchStartX = useRef(null);
+
+  const goTo = (next) => setIndex(((next % count) + count) % count);
+
+  useEffect(() => {
+    if (paused) return undefined;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
+
+    const timer = setInterval(() => setIndex((i) => (i + 1) % count), AUTOPLAY_MS);
+    return () => clearInterval(timer);
+  }, [paused, count, index]);
+
+  const onTouchStart = (event) => {
+    touchStartX.current = event.touches[0].clientX;
+  };
+
+  const onTouchEnd = (event) => {
+    if (touchStartX.current === null) return;
+    const delta = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(delta) > 40) goTo(index + (delta < 0 ? 1 : -1));
+  };
 
   return (
     <section className="bg-ivory">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-end gap-8 pb-12 sm:gap-14 sm:pb-16 md:pb-24 lg:grid-cols-12 lg:gap-10 lg:px-12 lg:pt-20">
-        {/*
-          Copy — centered under the portrait on mobile (same axis as logo + image),
-          left column on desktop.
-        */}
-        <div className="order-2 px-5 text-center sm:px-8 lg:order-1 lg:col-span-5 lg:px-0 lg:pb-10 lg:text-left">
-          <p className="eyebrow motion-safe:animate-fade-up">{t.eyebrow}</p>
-
-          <p className="mt-4 font-serif text-[1.65rem] italic motion-safe:animate-fade-up sm:text-4xl">
-            {t.lead}
-          </p>
-
-          <h1 className="mt-1 font-serif text-[clamp(2.75rem,13vw,7.5rem)] leading-[0.85] tracking-[-0.03em] motion-safe:animate-fade-up">
-            <span className="sr-only">{t.lead} </span>
-            <span className="italic">{t.title}</span>
-          </h1>
-
-          <p className="mx-auto mt-6 max-w-sm font-sans text-[15px] leading-7 text-stone motion-safe:animate-fade-up sm:mt-8 sm:text-base sm:leading-8 lg:mx-0">
-            {t.body}
-          </p>
-
-          <a
-            href="#latest"
-            className="btn-solid mt-7 motion-safe:animate-fade-up sm:mt-8 lg:inline-flex"
+      <div
+        role="region"
+        aria-roledescription="carousel"
+        aria-label={t.label}
+        className="mx-auto max-w-[1440px]"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
+        <div className="overflow-hidden">
+          <div
+            className="flex transition-transform duration-[900ms] ease-luxe motion-reduce:transition-none"
+            style={{ transform: `translateX(-${index * 100}%)` }}
           >
-            {t.cta}
-            <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
-          </a>
+            {slides.map((slide, i) => {
+              const s = slide[lang];
+              const isActive = i === index;
+
+              return (
+                <div
+                  key={slide.id}
+                  role="group"
+                  aria-roledescription="slide"
+                  aria-label={`${i + 1} / ${count}`}
+                  aria-hidden={!isActive}
+                  inert={!isActive}
+                  className="w-full shrink-0"
+                >
+                  <div className="grid grid-cols-1 items-center gap-8 px-5 pb-10 pt-8 sm:gap-10 sm:px-8 sm:pt-12 lg:grid-cols-12 lg:gap-12 lg:px-12 lg:pb-16 lg:pt-16">
+                    <div className="order-2 text-center lg:order-1 lg:col-span-5 lg:text-left">
+                      <p className="eyebrow motion-safe:animate-fade-up">{s.eyebrow}</p>
+
+                      <h1 className="mt-4 font-serif text-[clamp(2.4rem,9vw,5.5rem)] leading-[0.92] tracking-[-0.03em] motion-safe:animate-fade-up">
+                        {s.title}
+                      </h1>
+
+                      <p className="mx-auto mt-6 max-w-sm font-sans text-[15px] leading-7 text-stone sm:mt-8 sm:text-base sm:leading-8 lg:mx-0">
+                        {s.body}
+                      </p>
+
+                      {slide.to ? (
+                        <Link to={slide.to} className="btn-solid mt-7 sm:mt-8 lg:inline-flex" tabIndex={isActive ? 0 : -1}>
+                          {s.cta}
+                          <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                        </Link>
+                      ) : (
+                        <a href={slide.href} className="btn-solid mt-7 sm:mt-8 lg:inline-flex" tabIndex={isActive ? 0 : -1}>
+                          {s.cta}
+                          <ArrowRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+                        </a>
+                      )}
+                    </div>
+
+                    <div className="order-1 lg:order-2 lg:col-span-7">
+                      <div className="aspect-[4/3] overflow-hidden bg-linen lg:aspect-[5/4]">
+                        <StoryImage
+                          src={slide.image}
+                          alt={s.alt}
+                          eager={i === 0}
+                          className="h-full w-full object-cover object-center img-tone"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
-        {/*
-          Mobile / tablet: portrait is truly centered (equal side margins) on the
-          same vertical axis as the navbar logo — client flagged left gap > right.
-          Desktop (lg+): editorial right-aligned frame + floating inset returns.
-        */}
-        <div className="relative order-1 flex justify-center px-5 pt-6 sm:px-8 lg:order-2 lg:col-span-7 lg:block lg:px-0 lg:pt-0">
-          {/* “Main Character” label removed — portrait only */}
-          <figure className="relative w-[55%] max-w-[250px] sm:w-[62%] sm:max-w-[300px] lg:ml-auto lg:mr-0 lg:w-[80%] lg:max-w-none">
-            <div className="overflow-hidden bg-linen lg:aspect-[4/5]">
-              <StoryImage
-                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1000&q=85"
-                alt={t.mainAlt}
-                eager
-                className="mx-auto block h-auto w-full object-cover object-center img-tone lg:h-full"
-              />
-            </div>
-          </figure>
-
-          <div className="absolute -bottom-10 left-0 hidden w-[42%] border-[8px] border-ivory bg-linen lg:block lg:-left-14 lg:w-[36%]">
-            <div className="aspect-[3/4] overflow-hidden">
-              <StoryImage
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85"
-                alt={t.sideAlt}
-                className="h-full w-full object-cover img-tone"
-              />
-            </div>
+        <div className="flex items-center justify-between gap-4 px-5 pb-6 sm:px-8 lg:px-12">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => goTo(index - 1)}
+              aria-label={t.previous}
+              className="flex h-10 w-10 items-center justify-center border border-ink/20 text-ink transition-colors duration-300 hover:border-oxblood hover:text-oxblood"
+            >
+              <ChevronLeft className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => goTo(index + 1)}
+              aria-label={t.next}
+              className="flex h-10 w-10 items-center justify-center border border-ink/20 text-ink transition-colors duration-300 hover:border-oxblood hover:text-oxblood"
+            >
+              <ChevronRight className="h-4 w-4" strokeWidth={1.5} aria-hidden="true" />
+            </button>
           </div>
+
+          <div className="flex items-center gap-2" role="group" aria-label={t.label}>
+            {slides.map((slide, i) => (
+              <button
+                key={slide.id}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`${t.goTo} ${i + 1}`}
+                aria-current={i === index ? "true" : undefined}
+                className={`h-px transition-all duration-500 ${
+                  i === index ? "w-10 bg-oxblood" : "w-5 bg-ink/30 hover:bg-ink"
+                }`}
+              />
+            ))}
+          </div>
+
+          <p className="eyebrow tabular-nums text-ink/70">
+            {pad(index + 1)} / {pad(count)}
+          </p>
         </div>
       </div>
 
       <div className="mx-auto flex max-w-[1440px] flex-col gap-3 border-t border-ink/15 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
         <p className="eyebrow text-ink/70">Insolite Magazine x Khim Asriel</p>
 
-        <p className="eyebrow text-ink/70">{t.slogan}</p>
+        <p className="eyebrow text-ink/70">
+          {lang === "FR" ? "Soyez audacieux / Soyez vous / Soyez Insolite" : "Be bold / Be you / Be Insolite"}
+        </p>
       </div>
     </section>
   );
